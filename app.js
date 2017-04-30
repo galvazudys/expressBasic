@@ -42,8 +42,14 @@ app.get('/', (req, res) => {
 });
 
 app.post('/users/add', (req, res) => {
+    const newUser = {
+        first_name: req.body.first_name,
+        last_name: req.body.last_name,
+        email: req.body.email
+    }
+
     console.log('------------------------------------');
-    console.log(req.body.first_name);
+    console.log(newUser);
     console.log('------------------------------------');
 });
 
