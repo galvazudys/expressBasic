@@ -16,6 +16,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 //set static path
 app.use(express.static(path.join(__dirname, 'public')));
 
+//express-validator midleware
 app.use(expressValidator({
     errorFormatter: function (param, msg, value) {
         var namespace = param.split('.'),
@@ -56,15 +57,34 @@ app.get('/', (req, res) => {
 });
 
 app.post('/users/add', (req, res) => {
-    const newUser = {
-        first_name: req.body.first_name,
-        last_name: req.body.last_name,
-        email: req.body.email
-    }
+    req
+        .checkBody('first_name', 'First Name Is Require.')
+        .notEmpty();
+    req
+        .checkBody('last_name', 'Last Name Is Require.')
+        .notEmpty();
+    req
+        .checkBody('email', 'Email Is Require.')
+        .notEmpty();
 
-    console.log('------------------------------------');
-    console.log(newUser);
-    console.log('------------------------------------');
+    const errors = req.validationErrors();
+
+    if (errors) {
+        res.render('index', {
+            title: 'Custumers',
+            users: users,
+            errors: errors
+        });
+    } else {
+        const newUser = {
+            first_name: req.body.first_name,
+            last_name: req.body.last_name,
+            email: req.body.email
+        }
+        console.log('------------------------------------');
+        console.log('Sucsess');
+        console.log('------------------------------------');
+    }
 });
 
 app.listen(3000, () => {
