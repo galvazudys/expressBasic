@@ -16,6 +16,12 @@ app.use(bodyParser.urlencoded({extended: false}));
 //set static path
 app.use(express.static(path.join(__dirname, 'public')));
 
+//global vars
+app.use(function (req, res, next) {
+    res.locals.errors = null;
+    next();
+});
+
 //express-validator midleware
 app.use(expressValidator({
     errorFormatter: function (param, msg, value) {
@@ -67,7 +73,7 @@ app.post('/users/add', (req, res) => {
         .checkBody('email', 'Email Is Require.')
         .notEmpty();
 
-    const errors = req.validationErrors();
+    var errors = req.validationErrors();
 
     if (errors) {
         res.render('index', {
