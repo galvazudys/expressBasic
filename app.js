@@ -1,6 +1,7 @@
 var express = require('express');
 var bodyParser = require('body-parser')
 var path = require('path');
+var expressValidator = require('express-validator');
 
 const app = express();
 
@@ -14,6 +15,19 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 //set static path
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(expressValidator({
+    errorFormatter: function (param, msg, value) {
+        var namespace = param.split('.'),
+            root = namespace.shift(),
+            formParam = root;
+
+        while (namespace.length) {
+            formParam += '[' + namespace.shift() + ']';
+        }
+        return {param: formParam, msg: msg, value: value};
+    }
+}));
 
 const users = [
     {
