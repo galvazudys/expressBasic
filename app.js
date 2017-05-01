@@ -3,6 +3,7 @@ var bodyParser = require('body-parser')
 var path = require('path');
 var expressValidator = require('express-validator');
 var mongojs = require('mongojs');
+var ObjectId = mongojs.ObjectId;
 var db = mongojs('custumerapp', ['users']);
 
 const app = express();
@@ -86,6 +87,19 @@ app.post('/users/add', (req, res) => {
                 res.redirect('/');
             });
     }
+});
+
+app.delete('/users/delete/:id', function (req, res) {
+    db
+        .users
+        .remove({
+            _id: ObjectId(req.params.id)
+        }, function (err, result) {
+            if (err) {
+                console.log(err);
+            }
+            res.redirect('/');
+        });
 });
 
 app.listen(3000, () => {
