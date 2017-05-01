@@ -2,6 +2,8 @@ var express = require('express');
 var bodyParser = require('body-parser')
 var path = require('path');
 var expressValidator = require('express-validator');
+var mongojs = require('mongojs');
+var db = mongojs('custumerapp', ['users']);
 
 const app = express();
 
@@ -36,30 +38,18 @@ app.use(expressValidator({
     }
 }));
 
-const users = [
-    {
-        id: 1,
-        first_name: 'John',
-        last_name: 'Doe',
-        email: 'johndoe@gmail.com'
-    }, {
-        id: 2,
-        first_name: 'Bob',
-        last_name: 'Smith',
-        email: 'bobsmith@gmail.com'
-    }, {
-        id: 3,
-        first_name: 'Jill',
-        last_name: 'Jackson',
-        email: 'jilljackson@gmail.com'
-    }
-]
-
 app.get('/', (req, res) => {
-    res.render('index', {
-        title: 'Custumers',
-        users: users
-    });
+    // find everything
+    db
+        .users
+        .find(function (err, docs) {
+
+            res.render('index', {
+                title: 'Custumers',
+                users: docs
+            });
+        });
+
 });
 
 app.post('/users/add', (req, res) => {
@@ -87,9 +77,14 @@ app.post('/users/add', (req, res) => {
             last_name: req.body.last_name,
             email: req.body.email
         }
-        console.log('------------------------------------');
-        console.log('Sucsess');
-        console.log('------------------------------------');
+        db
+            .users
+            .insert(newUser, function (err, result) {
+                if (err) {
+                    console.log(err);
+                }
+                res.redirect('/');
+            });
     }
 });
 
